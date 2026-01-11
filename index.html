@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The View of Solar System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background - Orange/Black Theme */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: radial-gradient(ellipse at top, #1a0a00 0%, #000000 50%, #000000 100%);
+        }
+
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                linear-gradient(90deg, rgba(255, 140, 0, 0.08) 1px, transparent 1px),
+                linear-gradient(rgba(255, 140, 0, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 5, 0, 0.7);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.4s ease;
+            border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+            transform: translateY(0);
+        }
+
+        .navbar.scrolled {
+            background: rgba(20, 10, 0, 0.9);
+            box-shadow: 0 5px 30px rgba(255, 140, 0, 0.3);
+            padding: 1rem 6%;
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff8c00;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-menu li {
+            position: relative;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .nav-menu a.active {
+            color: #ff8c00;
+            text-shadow: 0 0 15px #ff8c00;
+        }
+
+        .nav-menu a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff8c00, #ff4500);
+            transition: width 0.4s ease;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: #ff8c00;
+            text-shadow: 0 0 15px #ff8c00, 0 0 30px #ff8c00;
+            transform: translateY(-3px);
+        }
+
+        .nav-menu a:hover::before,
+        .nav-menu a.active::before {
+            width: 100%;
+        }
+
+        /* Hero Section - Left Aligned */
+        #home {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 8rem 8% 4rem 8%;
+            position: relative;
+        }
+
+        .gif-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        .gif-background {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    opacity: 0.18;
+    animation: float 12s ease-in-out infinite;
+}
+
+.gif-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+        
+        .intro-content {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            text-align: left;
+        }
+
+        .intro-content h1 {
+            font-size: 5.5rem;
+            background: linear-gradient(45deg, #ff8c00, #ff4500, #ffa500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        /* Interest Section - Left Aligned */
+        .interest-section {
+            padding: 4rem 8%;
+            position: relative;
+        }
+
+        .interest-section h2 {
+            font-size: 3rem;
+            color: #ff8c00;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .interest-section .subheading {
+            font-size: 2.2rem;
+            color: #ffa500;
+            text-align: left;
+        }
+
+        /* Planets Section - 2 Cards Per Row */
+        .planets-section {
+            padding: 3rem 8%;
+        }
+
+        .planets-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2.5rem;
+            max-width: 1400px;
+        }
+
+        .planet-card {
+            background: linear-gradient(135deg, rgba(30, 15, 0, 0.6), rgba(50, 25, 0, 0.3));
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .planet-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 140, 0, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .planet-card:hover::before {
+            opacity: 1;
+        }
+
+        .planet-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 140, 0, 0.6);
+            box-shadow: 0 15px 40px rgba(255, 140, 0, 0.4);
+        }
+
+        .planet-gif-space {
+            width: 100%;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,140,0,0.15), rgba(0,0,0,0.9));
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #555;
+            font-size: 1rem;
+            border: 1px dashed rgba(255, 140, 0, 0.3);
+        }
+        .planet-gif-space img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+        }
+
+        .planet-card h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            color: #ff8c00;
+        }
+
+        .know-more-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(45deg, #ff8c00, #ff4500);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.05rem;
+            transition: all 0.4s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.4);
+            position: relative;
+            z-index: 10;
+        }
+
+        .know-more-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
+        }
+
+        .know-more-btn:active {
+            transform: scale(1.05);
+        }
+
+        /* About Section - Left Aligned */
+        #about {
+            padding: 6rem 8%;
+            background: rgba(30, 15, 0, 0.3);
+        }
+
+        #about h2 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: #ff8c00;
+            text-align: left;
+        }
+
+        #about p {
+            font-size: 1.3rem;
+            line-height: 2;
+            max-width: 900px;
+            color: #ccc;
+            text-align: left;
+        }
+
+        /* Contact Section - Left Aligned */
+        #contact {
+            padding: 6rem 8%;
+        }
+
+        #contact h2 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: #ff8c00;
+            text-align: left;
+        }
+
+        .contact-form {
+            max-width: 650px;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            background: rgba(30, 15, 0, 0.6);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-form input:focus,
+        .contact-form textarea:focus {
+            outline: none;
+            border-color: #ff8c00;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.4);
+        }
+
+        .submit-btn {
+            padding: 1.2rem 3rem;
+            background: linear-gradient(45deg, #ff8c00, #ff4500);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.8);
+        }
+
+        /* Chatbot */
+        .chatbot-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chatbot-toggle {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff8c00, #ff4500);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 5px 25px rgba(255, 140, 0, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.15);
+            box-shadow: 0 0 35px rgba(255, 140, 0, 1);
+        }
+
+        .chatbot-window {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 370px;
+            height: 520px;
+            background: rgba(15, 7, 0, 0.95);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .chatbot-window.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            padding: 1.2rem;
+            background: linear-gradient(45deg, #ff8c00, #ff4500);
+            border-radius: 19px 19px 0 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 1.2rem;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            max-width: 85%;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            background: rgba(255, 140, 0, 0.3);
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .bot-message {
+            background: rgba(255, 69, 0, 0.2);
+        }
+
+        .chatbot-input {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 140, 0, 0.2);
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 0.9rem;
+            background: rgba(30, 15, 0, 0.6);
+            border: 1px solid rgba(255, 140, 0, 0.2);
+            border-radius: 20px;
+            color: white;
+            margin-right: 0.6rem;
+        }
+
+        .chatbot-input input:focus {
+            outline: none;
+            border-color: #ff8c00;
+        }
+
+        .chatbot-input button {
+            padding: 0.9rem 1.5rem;
+            background: linear-gradient(45deg, #ff8c00, #ff4500);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        footer {
+            padding: 2.5rem;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.9);
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .planets-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .intro-content h1 {
+                font-size: 3.5rem;
+            }
+        }
+        @keyframes float {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(30px, -40px);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    <div class="grid-background"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">The View of Solar System</div>
+        <ul class="nav-menu">
+            <li><a onclick="scrollToSection('home')" id="nav-home" class="active">Home</a></li>
+            <li><a onclick="scrollToSection('about')" id="nav-about">About Us</a></li>
+            <li><a onclick="scrollToSection('contact')" id="nav-contact">Contact</a></li>
+            <li><a onclick="toggleChatbot()">Let's Ask Something</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home">
+        <div class="gif-container">
+
+    <div class="gif-background" style="top:8%; left:6%; animation-duration: 18s;">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTisccNv6CFIZiZLhtQQS9NT3A-ylAMUU1l-A&s">
+    </div>
+
+    <div class="gif-background" style="top:28%; left:60%; animation-duration: 22s;">
+        <img src="https://64.media.tumblr.com/eabbba48e58c4a1bb18a3bc6dfaf7fa3/tumblr_nt4lfpv71A1tvtkc8o1_500.gif">
+    </div>
+
+    <div class="gif-background" style="top:52%; left:12%; animation-duration: 20s;">
+        <img src="https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2022/06/2021_qm1_s_orbit_as_it_passed_closer_to_sun_in_the_sky_as_seen_from_earth_soon_after_discovery/24334830-2-eng-GB/2021_QM1_s_orbit_as_it_passed_closer_to_Sun_in_the_sky_as_seen_from_Earth_soon_after_discovery.gif">
+    </div>
+
+    <div class="gif-background" style="top:65%; left:70%; animation-duration: 25s;">
+        <img src="https://media.tenor.com/RHhLP_ePt8oAAAAM/aurora-solar-reaction.gif">
+    </div>
+
+    <div class="gif-background" style="top:18%; left:35%; animation-duration: 30s;">
+        <img src="https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyMDBtZzQ1ZmVkaW1idncxOXhmOWNvZmFuNXFvamR1eXc2ajZhYncwNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/APq0WQXgQQrKFcBbjP/giphy.gif">
+    </div>
+
+    <div class="gif-background" style="top:40%; left:80%; animation-duration: 19s;">
+        <img src="https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyMDBtZzQ1ZmVkaW1idncxOXhmOWNvZmFuNXFvamR1eXc2ajZhYncwNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/APq0WQXgQQrKFcBbjP/giphy.gif"">
+    </div>
+
+</div>
+
+        <div class="intro-content">
+            <h1>The View of<br>Solar System</h1>
+        </div>
+    </section>
+
+    <!-- Interest Section -->
+    <section class="interest-section">
+        <h2>Interested in knowing more about Solar System?</h2>
+        <div class="subheading">Let's go then →</div>
+    </section>
+
+    <!-- Planets Section -->
+    <section class="planets-section">
+        <div class="planets-grid">
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://media1.giphy.com/media/v1.Y2lkPTZjMDliOTUyMDBtZzQ1ZmVkaW1idncxOXhmOWNvZmFuNXFvamR1eXc2ajZhYncwNiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/APq0WQXgQQrKFcBbjP/giphy.gif"></div>
+                <h3>Solar System</h3>
+                <a href="https://solarsystem.nasa.gov/solar-system/our-solar-system/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/sun.gif"></div>
+                <h3>Sun</h3>
+                <a href="https://solarsystem.nasa.gov/solar-system/sun/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/mercury.gif"></div>
+                <h3>Mercury</h3>
+                <a href="https://solarsystem.nasa.gov/planets/mercury/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/venus.gif"></div>
+                <h3>Venus</h3>
+                <a href="https://solarsystem.nasa.gov/planets/venus/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/earth.gif"></div>
+                <h3>Earth</h3>
+                <a href="https://solarsystem.nasa.gov/planets/earth/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXPNEGBgGjOVnG0cwv27a1cV9cTAOhWTTEEQ&s"></div>
+                <h3>Moon</h3>
+                <a href="https://solarsystem.nasa.gov/moons/earths-moon/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/mars.gif"></div>
+                <h3>Mars</h3>
+                <a href="https://solarsystem.nasa.gov/planets/mars/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/jupiter.gif"></div>
+                <h3>Jupiter</h3>
+                <a href="https://solarsystem.nasa.gov/planets/jupiter/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/saturn.gif"></div>
+                <h3>Saturn</h3>
+                <a href="https://solarsystem.nasa.gov/planets/saturn/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/uranus.gif"></div>
+                <h3>Uranus</h3>
+                <a href="https://solarsystem.nasa.gov/planets/uranus/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://space-facts.com/wp-content/uploads/neptune.gif"></div>
+                <h3>Neptune</h3>
+                <a href="https://solarsystem.nasa.gov/planets/neptune/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://www.icegif.com/wp-content/uploads/2021/10/icegif-1632.gif"></div>
+                <h3>Galaxy</h3>
+                <a href="https://science.nasa.gov/universe/galaxies/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://cdn.pixabay.com/animation/2025/10/22/01/25/01-25-53-941_512.gif"></div>
+                <h3>Milky Way</h3>
+                <a href="https://solarsystem.nasa.gov/resources/285/the-milky-way-galaxy/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+             <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://i.pinimg.com/originals/0e/73/17/0e731764c019a7965e5574bf70946e06.gif"></div>
+                <h3>Comet</h3>
+                <a href="https://solarsystem.nasa.gov/asteroids-comets-and-meteors/comets/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://www.icegif.com/wp-content/uploads/2022/01/icegif-1059.gif"></div>
+                <h3>Meteor</h3>
+                <a href="https://solarsystem.nasa.gov/asteroids-comets-and-meteors/meteors-and-meteorites/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+            <div class="planet-card">
+                <div class="planet-gif-space"><img src="https://scitechdaily.com/images/Interstellar-Asteroids.gif"></div>
+                <h3>Asteroids</h3>
+                <a href="https://solarsystem.nasa.gov/asteroids-comets-and-meteors/asteroids/overview/" target="_blank" class="know-more-btn">Want to Know More</a>
+            </div>
+             
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <h2>About Us</h2>
+        <p>Welcome to The View of Solar System! We are passionate space enthusiasts dedicated to bringing the wonders of our solar system closer to you. Our mission is to make space education accessible, engaging, and inspiring for everyone.</p>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2>Contact</h2>
+        <form class="contact-form" onsubmit="handleSubmit(event)">
+            <input type="text" placeholder="Your Name" required>
+            <input type="email" placeholder="Your Email" required>
+            <textarea rows="5" placeholder="Your Message" required></textarea>
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 The View of Solar System. All rights reserved.</p>
+    </footer>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <button class="chatbot-toggle" onclick="toggleChatbot()">💬</button>
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">Solar System Assistant</div>
+            <div class="chatbot-messages" id="chatMessages">
+                <div class="message bot-message">Hello! Ask me anything about the solar system!</div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatInput" placeholder="Type your question...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Particle Canvas Animation - Original Version with Random Particles
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 150;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.opacity = Math.random() * 0.6 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(255, 140, 0, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw connections
+            particles.forEach((p1, i) => {
+                particles.slice(i + 1).forEach(p2 => {
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.strokeStyle = `rgba(255, 140, 0, ${0.15 * (1 - distance / 120)})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Navbar scroll effect with active state and hide/show
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        let lastScrollY = window.scrollY;
+        
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            const currentScrollY = window.scrollY;
+            
+            // Add scrolled class
+            if (currentScrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // Hide navbar when scrolling down, show when scrolling up
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                navbar.classList.add('hidden');
+            } else {
+                navbar.classList.remove('hidden');
+            }
+            
+            lastScrollY = currentScrollY;
+
+            // Update active nav link based on scroll position
+            let current = 'home';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (currentScrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('id') === 'nav-' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth scroll
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+         // No more GIF rotation - all GIFs visible at once
+
+        // Chatbot
+        
+// Toggle chatbot window
+function toggleChatbot() {
+    document.getElementById('chatbotWindow').classList.toggle('active');
+}
+
+// Send message handler
+function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (!message) return;
+
+    const messagesDiv = document.getElementById('chatMessages');
+
+    // User message
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message user-message';
+    userMsg.textContent = message;
+    messagesDiv.appendChild(userMsg);
+
+    // Bot message placeholder
+    const botMsg = document.createElement('div');
+    botMsg.className = 'message bot-message';
+    botMsg.textContent = "🤔 Thinking...";
+    messagesDiv.appendChild(botMsg);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    // Bot response
+    const response = getBotResponse(message);
+    botMsg.textContent = response;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    input.value = '';
+}
+
+// Core bot logic
+// ===== CHATBOT BRAIN - FIXED VERSION =====
+        // Toggle chatbot
+        function toggleChatbot() {
+            document.getElementById('chatbotWindow').classList.toggle('active');
+        }
+
+        // Send message handler
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('chatMessages');
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-message';
+            userMsg.textContent = message;
+            messagesDiv.appendChild(userMsg);
+
+            const botMsg = document.createElement('div');
+            botMsg.className = 'message bot-message';
+            botMsg.textContent = "🤔 Thinking...";
+            messagesDiv.appendChild(botMsg);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            const response = getBotResponse(message);
+            botMsg.textContent = response;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            input.value = '';
+        }
+
+        // ===== CHATBOT BRAIN - FIXED VERSION =====
+        function getBotResponse(message) {
+            const msg = message.toLowerCase().trim();
+
+            // Helper function
+            function capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            /* ===== GREETINGS ===== */
+            if (/^h+i+|^h+e+l+o+|^h+e+y+|^g+ood (morning|afternoon|evening)|^w+hat'?s up|^yo+/.test(msg)) {
+                return "👋 Hello! How can I assist you with the solar system today?";
+            }
+
+            /* ===== POSITIVE CONTINUE ===== */
+            const positives = ["ok","okay","alright","yes","yeah","great","good","wow","superb","cool","nice"];
+            if (positives.includes(msg)) {
+                return "😊 Great! Please proceed — what would you like to know next?";
+            }
+
+            /* ===== WEBSITE INFO ===== */
+            if (msg.includes("website") || msg.includes("how this work")) {
+                return "This website works using HTML, CSS, and JavaScript for structure, style, and interactivity. It features information about the solar system with interactive elements!";
+            }
+
+            /* ===== SPACE FACTS ===== */
+            if (msg.includes("space fact") || msg.includes("fact") || msg.includes("tell me about space") || msg.includes("interesting")) {
+                const facts = [
+                    "☀️ The Sun makes up 99.86% of the solar system's mass!",
+                    "🪐 A day on Venus is longer than its year!",
+                    "🌪️ Jupiter's Great Red Spot is a storm that has lasted over 300 years!",
+                    "💧 Saturn could float in water because it's less dense!",
+                    "🌍 One million Earths could fit inside the Sun!",
+                    "❄️ Neptune has the strongest winds in the solar system, up to 2,100 km/h!",
+                    "🌙 Mars has the largest volcano in the solar system - Olympus Mons!"
+                ];
+                return facts[Math.floor(Math.random() * facts.length)];
+            }
+
+            /* ===== SOLAR SYSTEM BASICS ===== */
+            if (msg.includes("what is solar system") || msg.includes("about solar system")) {
+                return "The solar system consists of the Sun, 8 planets (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune), their moons, asteroids, comets, and other celestial objects.";
+            }
+            if (msg.includes("how many planet")) {
+                return "There are 8 planets in our solar system: Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, and Neptune.";
+            }
+            
+            /* ===== TELL ME ABOUT PLANETS ===== */
+            if ((msg.includes("tell me about planet") || msg.includes("about planet") || msg.includes("planet")) && !msg.includes("distance") && !msg.includes("how many")) {
+                // Check if asking about a specific planet first
+                const planetNames = ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto", "sun", "moon"];
+                const foundPlanet = planetNames.find(p => msg.includes(p));
+                
+                if (!foundPlanet) {
+                    return "🪐 Our solar system has 8 planets:\n• Mercury - Smallest and closest to Sun\n• Venus - Hottest planet\n• Earth - Our home with life\n• Mars - The Red Planet\n• Jupiter - Largest planet\n• Saturn - Planet with rings\n• Uranus - Rotates on its side\n• Neptune - Farthest planet\n\nAsk about any specific planet for details!";
+                }
+            }
+
+            /* ===== DISTANCE DATA (million km from Sun) ===== */
+            const distanceFromSun = {
+                mercury: 58,
+                venus: 108,
+                earth: 150,
+                mars: 228,
+                jupiter: 778,
+                saturn: 1400,
+                uranus: 2900,
+                neptune: 4500,
+                pluto: 5900
+            };
+
+            /* ===== DISTANCE QUERIES - PRIORITY CHECK ===== */
+            if (msg.includes("distance") || msg.includes("far") || msg.includes("away from")) {
+                const planetNames = Object.keys(distanceFromSun);
+                const foundPlanets = planetNames.filter(p => msg.includes(p));
+
+                // Case 1: Two or more planets - distance between them
+                if (foundPlanets.length >= 2) {
+                    const basePlanet = foundPlanets[0];
+                    let reply = `📏 Distance from ${capitalize(basePlanet)}:\n`;
+
+                    for (let i = 1; i < foundPlanets.length; i++) {
+                        const targetPlanet = foundPlanets[i];
+                        const distance = Math.abs(distanceFromSun[basePlanet] - distanceFromSun[targetPlanet]);
+                        reply += `• ${capitalize(targetPlanet)}: ${distance} million km\n`;
+                    }
+                    return reply;
+                }
+
+                // Case 2: One planet to all others
+                if (foundPlanets.length === 1 && (msg.includes("each") || msg.includes("every") || msg.includes("all"))) {
+                    const basePlanet = foundPlanets[0];
+                    let reply = `📏 Distance from ${capitalize(basePlanet)} to all planets:\n`;
+
+                    planetNames.forEach(planet => {
+                        if (planet !== basePlanet) {
+                            const distance = Math.abs(distanceFromSun[basePlanet] - distanceFromSun[planet]);
+                            reply += `• ${capitalize(planet)}: ${distance} million km\n`;
+                        }
+                    });
+                    return reply;
+                }
+
+                // Case 3: Single planet - distance from Sun
+                if (foundPlanets.length === 1) {
+                    const planet = foundPlanets[0];
+                    return `📏 ${capitalize(planet)} is approximately ${distanceFromSun[planet]} million km from the Sun.`;
+                }
+
+                return "Please specify which planets you'd like to know the distance between. For example: 'distance between Earth and Mars' or 'Earth distance from each planet'.";
+            }
+
+            /* ===== PLANET DETAILS - AFTER DISTANCE CHECK ===== */
+            const planets = {
+                sun: {desc:"The Sun is a star at the center of the solar system.", radius:"696,340 km", moons:0},
+                mercury: {desc:"Mercury is closest to the Sun and the smallest planet.", radius:"2,439 km", moons:0},
+                venus: {desc:"Venus is the hottest planet.", radius:"6,052 km", moons:0},
+                earth: {desc:"Earth is the only known planet with life.", radius:"6,371 km", moons:1},
+                moon: {desc:"The Moon is Earth's natural satellite.", radius:"1,737 km", moons:0},
+                mars: {desc:"Mars is called the Red Planet.", radius:"3,390 km", moons:2},
+                jupiter: {desc:"Jupiter is the largest planet.", radius:"69,911 km", moons:79},
+                saturn: {desc:"Saturn has beautiful rings.", radius:"58,232 km", moons:82},
+                uranus: {desc:"Uranus rotates on its side.", radius:"25,362 km", moons:27},
+                neptune: {desc:"Neptune has very strong winds.", radius:"24,622 km", moons:14},
+                pluto: {desc:"Pluto is a dwarf planet, no longer classified as a planet.", radius:"1,188 km", moons:5}
+            };
+
+            for (let p in planets) {
+                if (msg.includes(p)) {
+                    return `🪐 ${capitalize(p)}: ${planets[p].desc} Radius: ${planets[p].radius}, Moons: ${planets[p].moons}.`;
+                }
+            }
+
+            /* ===== SATELLITES ===== */
+            if (msg.includes("satellite")) {
+                if (msg.includes("work")) {
+                    return "Satellites orbit planets and collect/transmit data such as communication signals, weather images, and GPS info.";
+                }
+                if (msg.includes("how many")) {
+                    return "Thousands of artificial satellites orbit Earth, plus many natural satellites (moons) around planets.";
+                }
+                if (msg.includes("use")) {
+                    return "Satellites are used for communication, navigation (GPS), weather forecasting, Earth observation, and scientific research.";
+                }
+                return "Satellites orbit planets and help with communication, navigation, Earth observation, and scientific research.";
+            }
+
+            /* ===== SPACE CAREERS ===== */
+            const careersDetails = {
+                "astronomer": "👨‍🔬 Astronomer: Studies stars, planets, and galaxies using telescopes and data analysis.",
+                "aerospace engineer": "🚀 Aerospace Engineer: Designs and builds spacecraft, satellites, and rockets for space exploration.",
+                "space scientist": "🔬 Space Scientist: Researches space phenomena, microgravity experiments, and planetary systems.",
+                "scientist": "🔬 Space Scientist: Researches space phenomena, microgravity experiments, and planetary systems.",
+                "astrophysicist": "⚛️ Astrophysicist: Applies physics to understand celestial objects and cosmic events.",
+                "software developer": "💻 Software Developer: Builds programs for space missions, simulations, and data analysis."
+            };
+
+            if (msg.includes("career") || msg.includes("job") || msg.includes("work in space") || (msg.includes("space") && msg.includes("work"))) {
+                return "🌟 Space careers include:\n• Astronomer\n• Aerospace Engineer\n• Space Scientist\n• Astrophysicist\n• Software Developer\n\nAsk about any specific career for details!";
+            }
+
+            for (let career in careersDetails) {
+                if (msg.includes(career)) {
+                    return careersDetails[career];
+                }
+            }
+
+            /* ===== FALLBACK ===== */
+            return "🤔 I'm not sure about that. Try asking about:💫 Planets📏 Distances between planets🌟 Space facts💼 Careers in space🌐 How this website works Or explore: 🔗 NASA: https://www.nasa.gov\n🔗 Wikipedia: https://en.wikipedia.org/wiki/Solar_System";
+        }
+
+        // Enter key support
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Contact form
+        function handleSubmit(e) {
+            e.preventDefault();
+            alert('Thank you! We will get back to you soon.');
+            e.target.reset();
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function handleSubmit(e) {
+            e.preventDefault();
+            alert('Thank you! We will get back to you soon.');
+            e.target.reset();
+        }
+    </script>
+</body>
+</html>
